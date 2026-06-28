@@ -368,6 +368,13 @@ function App() {
     }
   };
 
+  const handleSwapLanguages = () => {
+    stopAllStreams();
+    const temp = langA;
+    setLangA(langB);
+    setLangB(temp);
+  };
+
   const getStatusBadge = () => {
     switch (connectionStatus) {
       case 'demo':
@@ -511,6 +518,7 @@ function App() {
           langB={langB}
           onChangeLangA={(code) => { stopAllStreams(); setLangA(code); }}
           onChangeLangB={(code) => { stopAllStreams(); setLangB(code); }}
+          onSwapLanguages={handleSwapLanguages}
           isRecording={isRecording}
           activeSpeaker={activeSpeaker}
           transcriptsA={transcriptsA}

@@ -31,6 +31,7 @@ interface TranslationScreenProps {
   langB: string;
   onChangeLangA: (code: string) => void;
   onChangeLangB: (code: string) => void;
+  onSwapLanguages: () => void;
   isRecording: boolean;
   activeSpeaker: 'A' | 'B' | null;
   transcriptsA: Transcript[]; // User A's spoken, translated to B
@@ -45,6 +46,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
   langB,
   onChangeLangA,
   onChangeLangB,
+  onSwapLanguages,
   isRecording,
   activeSpeaker,
   transcriptsA,
@@ -95,14 +97,18 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
   if (mode === 'split') {
     return (
       <div className="split-layout">
-        {/* User B Section (TOP, 180deg Rotated for face-to-face) */}
-        <div 
-          className={`split-section user-b ${activeSpeaker === 'B' ? 'active' : ''}`}
-          style={{
-            borderBottom: '2px dashed rgba(255, 255, 255, 0.1)',
-            boxShadow: activeSpeaker === 'B' ? 'inset 0 0 40px rgba(244, 114, 182, 0.15)' : 'none',
-          }}
+        {/* Center Swapper Button (Mockup 100% Match) */}
+        <button 
+          className="center-swapper" 
+          onClick={onSwapLanguages}
+          title="언어 전환"
+          type="button"
         >
+          <ArrowUpDown size={18} className="center-swapper-icon" />
+        </button>
+
+        {/* User B Section (TOP, 180deg Rotated for face-to-face) */}
+        <div className={`split-section user-b ${activeSpeaker === 'B' ? 'active' : ''}`}>
           {/* Top Panel Actions for B */}
           <div className="split-action-bar">
             <select
@@ -161,12 +167,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
         </div>
 
         {/* User A Section (BOTTOM, Normal facing User A) */}
-        <div 
-          className={`split-section user-a ${activeSpeaker === 'A' ? 'active' : ''}`}
-          style={{
-            boxShadow: activeSpeaker === 'A' ? 'inset 0 0 40px rgba(99, 102, 241, 0.15)' : 'none',
-          }}
-        >
+        <div className={`split-section user-a ${activeSpeaker === 'A' ? 'active' : ''}`}>
           {/* Push to talk button for User A */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>누른 채로 말하기</span>
