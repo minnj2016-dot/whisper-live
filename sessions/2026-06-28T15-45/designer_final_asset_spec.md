@@ -1,0 +1,1 @@
+# 🎬 최종 썸네일 레이아웃 스펙: Focus Point of Chaos (Centralized Chaos 선택)
