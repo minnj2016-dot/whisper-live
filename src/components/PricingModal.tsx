@@ -69,7 +69,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const t = TRANSLATIONS[uiLang];
+  const t = TRANSLATIONS[uiLang] || TRANSLATIONS.ko;
 
   return (
     <div className="modal-overlay" onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>

@@ -81,7 +81,8 @@ const DEMO_SCENARIOS: Record<string, Array<{ speaker: 'A' | 'B'; original: strin
 function App() {
   // UI Language State
   const [uiLang, setUiLang] = useState<'ko' | 'en'>(() => {
-    return (localStorage.getItem('gemini_live_translate_ui_lang') as 'ko' | 'en') || 'ko';
+    const saved = localStorage.getItem('gemini_live_translate_ui_lang');
+    return (saved === 'ko' || saved === 'en') ? saved : 'ko';
   });
 
   // App Modes and Languages
@@ -424,7 +425,7 @@ function App() {
   };
 
   const getStatusBadge = () => {
-    const t = TRANSLATIONS[uiLang];
+    const t = TRANSLATIONS[uiLang] || TRANSLATIONS.ko;
     switch (connectionStatus) {
       case 'demo':
         return (
@@ -464,7 +465,7 @@ function App() {
     }
   };
 
-  const t = TRANSLATIONS[uiLang];
+  const t = TRANSLATIONS[uiLang] || TRANSLATIONS.ko;
 
   return (
     <div className="app-container">

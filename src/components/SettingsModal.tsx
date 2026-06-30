@@ -80,7 +80,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     onClose();
   };
 
-  const t = TRANSLATIONS[uiLang];
+  const t = TRANSLATIONS[uiLang] || TRANSLATIONS.ko;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
