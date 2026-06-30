@@ -38,6 +38,7 @@ interface TranslationScreenProps {
   transcriptsB: Transcript[]; // User B's spoken, translated to A
   onStartSpeaking: (speaker: 'A' | 'B') => void;
   onStopSpeaking: () => void;
+  uiLang?: 'ko' | 'en';
 }
 
 export const TranslationScreen: React.FC<TranslationScreenProps> = ({
@@ -53,6 +54,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
   transcriptsB,
   onStartSpeaking,
   onStopSpeaking,
+  uiLang = 'ko',
 }) => {
   const getLanguageName = (code: string) => {
     return SUPPORTED_LANGUAGES.find((l) => l.code === code)?.name || code;
@@ -101,7 +103,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
         <button 
           className="center-swapper" 
           onClick={onSwapLanguages}
-          title="언어 전환"
+          title={uiLang === 'ko' ? '언어 전환' : 'Swap Languages'}
           type="button"
         >
           <ArrowUpDown size={18} className="center-swapper-icon" />
@@ -135,11 +137,13 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
             {latestA.main ? (
               <>
                 <p className="split-text" style={{ color: 'var(--color-secondary)' }}>{latestA.main}</p>
-                {latestA.sub && <p className="split-subtext">Original: {latestA.sub}</p>}
+                {latestA.sub && <p className="split-subtext">{uiLang === 'ko' ? '원문' : 'Original'}: {latestA.sub}</p>}
               </>
             ) : (
               <p className="transcript-placeholder">
-                {activeSpeaker === 'A' ? '상대방이 말하고 있습니다...' : '상대방의 번역본이 여기에 표시됩니다'}
+                {activeSpeaker === 'A' 
+                  ? (uiLang === 'ko' ? '상대방이 말하고 있습니다...' : 'The other party is speaking...') 
+                  : (uiLang === 'ko' ? '상대방의 번역본이 여기에 표시됩니다' : 'The other party\'s translation will appear here')}
               </p>
             )}
           </div>
@@ -162,7 +166,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
             >
               <Mic size={22} />
             </button>
-            <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>눌러서 말하기</span>
+            <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>{uiLang === 'ko' ? '눌러서 말하기' : 'Hold to Speak'}</span>
           </div>
         </div>
 
@@ -170,7 +174,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
         <div className={`split-section user-a ${activeSpeaker === 'A' ? 'active' : ''}`}>
           {/* Push to talk button for User A */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>누른 채로 말하기</span>
+            <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>{uiLang === 'ko' ? '누른 채로 말하기' : 'Hold to Speak'}</span>
             <button
               className={`microphone-button ${activeSpeaker === 'A' ? 'active' : ''}`}
               style={{
@@ -194,11 +198,13 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
             {latestB.main ? (
               <>
                 <p className="split-text" style={{ color: 'var(--color-primary)' }}>{latestB.main}</p>
-                {latestB.sub && <p className="split-subtext">원문: {latestB.sub}</p>}
+                {latestB.sub && <p className="split-subtext">{uiLang === 'ko' ? '원문' : 'Original'}: {latestB.sub}</p>}
               </>
             ) : (
               <p className="transcript-placeholder">
-                {activeSpeaker === 'B' ? '상대방이 말하고 있습니다...' : '번역된 한국어가 여기에 표시됩니다'}
+                {activeSpeaker === 'B' 
+                  ? (uiLang === 'ko' ? '상대방이 말하고 있습니다...' : 'The other party is speaking...') 
+                  : (uiLang === 'ko' ? '번역된 텍스트가 여기에 표시됩니다' : 'Translated text will appear here')}
               </p>
             )}
           </div>
@@ -248,16 +254,16 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
       >
         <Headphones size={18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
         <span>
-          <strong>이어폰 공유 가이드</strong>: 왼쪽 이어버드는 User A({getLanguageFlag(langA)}), 오른쪽 이어버드는 User B({getLanguageFlag(langB)})가 각각 착용하면 실시간 귓속 통역을 들을 수 있습니다!
+          <strong>{uiLang === 'ko' ? '이어폰 공유 가이드' : 'Earbud Sharing Guide'}</strong>: {uiLang === 'ko' ? `왼쪽 이어버드는 User A(${getLanguageFlag(langA)}), 오른쪽 이어버드는 User B(${getLanguageFlag(langB)})가 각각 착용하면 실시간 귓속 통역을 들을 수 있습니다!` : `Put on the left earbud for User A (${getLanguageFlag(langA)}) and the right earbud for User B (${getLanguageFlag(langB)}) to hear real-time in-ear translation!`}
         </span>
       </div>
 
       {/* User A Transcript Card */}
       <div className={`earbud-card user-a ${activeSpeaker === 'A' ? 'speaking' : ''}`}>
         <div className="card-header">
-          <span className="user-badge">{getLanguageName(langA)} 사용자</span>
+          <span className="user-badge">{uiLang === 'ko' ? `${getLanguageName(langA)} 사용자` : `${getLanguageName(langA)} User`}</span>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {activeSpeaker === 'A' && <span style={{ fontSize: '11px', color: 'var(--color-primary)' }}>말하는 중...</span>}
+            {activeSpeaker === 'A' && <span style={{ fontSize: '11px', color: 'var(--color-primary)' }}>{uiLang === 'ko' ? '말하는 중...' : 'Speaking...'}</span>}
             <Volume2 size={16} className="color-primary" style={{ opacity: activeSpeaker === 'B' ? 1 : 0.3, color: '#818cf8' }} />
           </div>
         </div>
@@ -266,11 +272,13 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
             <p style={{ margin: 0 }}>{latestB.main}</p>
           ) : (
             <span className="transcript-placeholder">
-              {activeSpeaker === 'B' ? '상대방의 말이 통역되어 들리는 중...' : '상상 속 번역이 귓가에 울립니다.'}
+              {activeSpeaker === 'B' 
+                ? (uiLang === 'ko' ? '상대방의 말이 통역되어 들리는 중...' : 'Hearing translated speech in earbud...') 
+                : (uiLang === 'ko' ? '상상 속 번역이 귓가에 울립니다.' : 'Translation will be heard here.')}
             </span>
           )}
         </div>
-        {latestB.sub && <div className="original-text">원문: {latestB.sub}</div>}
+        {latestB.sub && <div className="original-text">{uiLang === 'ko' ? '원문' : 'Original'}: {latestB.sub}</div>}
       </div>
 
       {/* Mic Trigger Buttons Row */}
@@ -290,7 +298,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
             <Mic size={24} />
           </button>
           <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-primary)' }}>
-            A 말하기 ({getLanguageFlag(langA)})
+            {uiLang === 'ko' ? 'A 말하기' : 'Speak A'} ({getLanguageFlag(langA)})
           </span>
         </div>
 
@@ -325,7 +333,7 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
             <Mic size={24} />
           </button>
           <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-secondary)' }}>
-            B 말하기 ({getLanguageFlag(langB)})
+            {uiLang === 'ko' ? 'B 말하기' : 'Speak B'} ({getLanguageFlag(langB)})
           </span>
         </div>
       </div>
@@ -333,9 +341,9 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
       {/* User B Transcript Card */}
       <div className={`earbud-card user-b ${activeSpeaker === 'B' ? 'speaking' : ''}`}>
         <div className="card-header">
-          <span className="user-badge">{getLanguageName(langB)} User</span>
+          <span className="user-badge">{uiLang === 'ko' ? `${getLanguageName(langB)} 사용자` : `${getLanguageName(langB)} User`}</span>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {activeSpeaker === 'B' && <span style={{ fontSize: '11px', color: 'var(--color-secondary)' }}>Speaking...</span>}
+            {activeSpeaker === 'B' && <span style={{ fontSize: '11px', color: 'var(--color-secondary)' }}>{uiLang === 'ko' ? '말하는 중...' : 'Speaking...'}</span>}
             <Volume2 size={16} className="color-secondary" style={{ opacity: activeSpeaker === 'A' ? 1 : 0.3, color: '#f472b6' }} />
           </div>
         </div>
@@ -344,11 +352,13 @@ export const TranslationScreen: React.FC<TranslationScreenProps> = ({
             <p style={{ margin: 0 }}>{latestA.main}</p>
           ) : (
             <span className="transcript-placeholder">
-              {activeSpeaker === 'A' ? 'Hearing translation in earbud...' : 'Translation will appear here.'}
+              {activeSpeaker === 'A' 
+                ? (uiLang === 'ko' ? '상대방의 말이 통역되어 들리는 중...' : 'Hearing translation in earbud...') 
+                : (uiLang === 'ko' ? '번역 결과가 여기에 표시됩니다.' : 'Translation will appear here.')}
             </span>
           )}
         </div>
-        {latestA.sub && <div className="original-text">Original: {latestA.sub}</div>}
+        {latestA.sub && <div className="original-text">{uiLang === 'ko' ? '원문' : 'Original'}: {latestA.sub}</div>}
       </div>
 
       {/* Language Selectors for Earbud */}

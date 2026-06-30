@@ -6,15 +6,70 @@ interface PricingModalProps {
   onClose: () => void;
   onSelectPro: () => void;
   currentTier: 'free' | 'pro';
+  uiLang?: 'ko' | 'en';
 }
+
+const TRANSLATIONS = {
+  ko: {
+    title: '요금제 안내 (Pricing Plans)',
+    subtitle: '실시간 귓속/대면 통역기 서비스를 무제한으로 이용하고 비즈니스를 글로벌화하세요.',
+    activeTier: '사용 중',
+    freeTitle: 'Free (기본 체험)',
+    freePrice: '0원',
+    freePeriod: '/ 평생 무료',
+    freeBullet1: '실시간 다국어 동시통역 체험',
+    freeBullet2: '이어폰 공유 및 대면 모드 지원',
+    freeBullet3: '매 세션당 대화 3회(3턴) 제한',
+    proTitle: 'Pro (무제한 프로)',
+    proPrice: '19,000원',
+    proPeriod: '/ 월 구독',
+    proBullet1: '무제한 실시간 양방향 통역',
+    proBullet2: '초저지연 Gemini Live API 우선 순위 연결',
+    proBullet3: '대면 스플릿 스크린 전용 뷰어 가독성 강화',
+    proBullet4: '중국어/베트남어/스페인어 등 70개국 완벽 통역',
+    proBtnStart: 'Pro 구독 시작하기',
+    proBtnActive: '현재 이용 중인 요금제입니다',
+    enterpriseTitle: 'Enterprise (기업 비즈니스)',
+    enterprisePrice: '별도 문의',
+    enterpriseBtn: '영업 문의하기',
+    enterpriseAlert: '영업팀 문의: sales@whisperlive.com 으로 문의 부탁드립니다.',
+  },
+  en: {
+    title: 'Pricing Plans',
+    subtitle: 'Enjoy unlimited real-time in-ear/face-to-face translation to scale your global business.',
+    activeTier: 'Active',
+    freeTitle: 'Free (Basic Trial)',
+    freePrice: '$0',
+    freePeriod: '/ Free Forever',
+    freeBullet1: 'Real-time multilingual translation trial',
+    freeBullet2: 'Earbud sharing & face-to-face mode support',
+    freeBullet3: 'Limit of 3 turns per session',
+    proTitle: 'Pro (Unlimited Pro)',
+    proPrice: '19,000 KRW',
+    proPeriod: '/ Month',
+    proBullet1: 'Unlimited real-time two-way translation',
+    proBullet2: 'Priority connection to ultra-low latency Gemini Live API',
+    proBullet3: 'Enhanced readability for split-screen face-to-face mode',
+    proBullet4: 'Flawless translation for 70+ languages including Chinese/Vietnamese/Spanish',
+    proBtnStart: 'Start Pro Subscription',
+    proBtnActive: 'Current Active Plan',
+    enterpriseTitle: 'Enterprise (Business)',
+    enterprisePrice: 'Contact Sales',
+    enterpriseBtn: 'Contact Sales Team',
+    enterpriseAlert: 'Sales Team: Please contact sales@whisperlive.com',
+  }
+};
 
 export const PricingModal: React.FC<PricingModalProps> = ({
   isOpen,
   onClose,
   onSelectPro,
   currentTier,
+  uiLang = 'ko',
 }) => {
   if (!isOpen) return null;
+
+  const t = TRANSLATIONS[uiLang];
 
   return (
     <div className="modal-overlay" onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
@@ -35,7 +90,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
         <div className="modal-header" style={{ marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={20} style={{ color: 'var(--color-secondary)' }} />
-            <h2 className="modal-title">요금제 안내 (Pricing Plans)</h2>
+            <h2 className="modal-title">{t.title}</h2>
           </div>
           <button className="icon-button" onClick={onClose} aria-label="Close">
             <X size={18} />
@@ -43,7 +98,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
         </div>
 
         <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', textAlign: 'center', marginBottom: '24px' }}>
-          실시간 귓속/대면 통역기 서비스를 무제한으로 이용하고 비즈니스를 글로벌화하세요.
+          {t.subtitle}
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -60,27 +115,27 @@ export const PricingModal: React.FC<PricingModalProps> = ({
           >
             {currentTier === 'free' && (
               <span className="user-badge" style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '10px', background: 'rgba(255,255,255,0.1)', color: 'white' }}>
-                사용 중
+                {t.activeTier}
               </span>
             )}
-            <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: 700 }}>Free (기본 체험)</h3>
+            <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: 700 }}>{t.freeTitle}</h3>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', margin: '8px 0 12px' }}>
-              <span style={{ fontSize: '24px', fontWeight: 800, color: 'var(--color-text-main)' }}>0원</span>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>/ 평생 무료</span>
+              <span style={{ fontSize: '24px', fontWeight: 800, color: 'var(--color-text-main)' }}>{t.freePrice}</span>
+              <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{t.freePeriod}</span>
             </div>
             
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={14} style={{ color: 'var(--color-primary)' }} />
-                <span>실시간 다국어 동시통역 체험</span>
+                <span>{t.freeBullet1}</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={14} style={{ color: 'var(--color-primary)' }} />
-                <span>이어폰 공유 및 대면 모드 지원</span>
+                <span>{t.freeBullet2}</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-secondary)' }}>
                 <Check size={14} />
-                <span><strong>매 세션당 대화 3회(3턴) 제한</strong></span>
+                <span><strong>{t.freeBullet3}</strong></span>
               </li>
             </ul>
           </div>
@@ -101,32 +156,32 @@ export const PricingModal: React.FC<PricingModalProps> = ({
             </span>
             {currentTier === 'pro' && (
               <span className="user-badge" style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '10px', background: 'rgba(52, 211, 153, 0.15)', color: 'var(--color-success)', border: '1px solid rgba(52, 211, 153, 0.3)' }}>
-                사용 중
+                {t.activeTier}
               </span>
             )}
             
-            <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 800, color: 'var(--color-primary)' }}>Pro (무제한 프로)</h3>
+            <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 800, color: 'var(--color-primary)' }}>{t.proTitle}</h3>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', margin: '8px 0 12px' }}>
-              <span style={{ fontSize: '28px', fontWeight: 800, color: 'white' }}>19,000원</span>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>/ 월 구독</span>
+              <span style={{ fontSize: '28px', fontWeight: 800, color: 'white' }}>{t.proPrice}</span>
+              <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{t.proPeriod}</span>
             </div>
 
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px', fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={14} style={{ color: 'var(--color-success)' }} />
-                <span><strong>무제한 실시간 양방향 통역</strong></span>
+                <span>{t.proBullet1}</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={14} style={{ color: 'var(--color-success)' }} />
-                <span>초저지연 Gemini Live API 우선 순위 연결</span>
+                <span>{t.proBullet2}</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={14} style={{ color: 'var(--color-success)' }} />
-                <span>대면 스플릿 스크린 전용 뷰어 가독성 강화</span>
+                <span>{t.proBullet3}</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={14} style={{ color: 'var(--color-success)' }} />
-                <span>중국어/베트남어/스페인어 등 70개국 완벽 통역</span>
+                <span>{t.proBullet4}</span>
               </li>
             </ul>
 
@@ -142,7 +197,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
                   border: 'none'
                 }}
               >
-                Pro 구독 시작하기
+                {t.proBtnStart}
               </button>
             ) : (
               <button 
@@ -155,7 +210,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
                   cursor: 'default'
                 }}
               >
-                현재 이용 중인 요금제입니다
+                {t.proBtnActive}
               </button>
             )}
           </div>
@@ -169,13 +224,13 @@ export const PricingModal: React.FC<PricingModalProps> = ({
               padding: '16px'
             }}
           >
-            <h3 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: 700 }}>Enterprise (기업 비즈니스)</h3>
+            <h3 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: 700 }}>{t.enterpriseTitle}</h3>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', margin: '8px 0 12px' }}>
-              <span style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-text-main)' }}>별도 문의</span>
+              <span style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-text-main)' }}>{t.enterprisePrice}</span>
             </div>
 
             <button 
-              onClick={() => alert('영업팀 문의: sales@whisperlive.com 으로 문의 부탁드립니다.')}
+              onClick={() => alert(t.enterpriseAlert)}
               className="save-button"
               style={{
                 background: 'rgba(255, 255, 255, 0.05)',
@@ -185,7 +240,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
                 padding: '10px'
               }}
             >
-              영업 문의하기
+              {t.enterpriseBtn}
             </button>
           </div>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Settings, Headphones, Users, HelpCircle, ShieldAlert, Sparkles, CreditCard, Award } from 'lucide-react';
+import { Settings, Headphones, Users, HelpCircle, ShieldAlert, Sparkles, CreditCard, Award, Globe } from 'lucide-react';
 import { TranslationScreen } from './components/TranslationScreen';
 import { SettingsModal } from './components/SettingsModal';
 import { PricingModal } from './components/PricingModal';
@@ -7,6 +7,43 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { AudioRecorder, AudioPlayer } from './utils/audioProcessor';
 import { GeminiLiveSocket } from './utils/geminiLiveSocket';
 import './App.css';
+
+const TRANSLATIONS = {
+  ko: {
+    statusDemo: '데모 모드',
+    statusConnected: '연결됨',
+    statusConnecting: '연결 중...',
+    statusError: '에러',
+    statusWaiting: '대기 중',
+    freeLimit: '무료 사용량 한도:',
+    turnsUsed: '턴',
+    unlockPro: 'PRO로 해제',
+    upgrade: '업그레이드',
+    simulatorActive: '시뮬레이터 모드가 활성화되어 있습니다.',
+    registerApiKey: 'API 키 등록',
+    earbudShare: '이어폰 공유',
+    faceToFace: '대면 대화',
+    errMissingKey: 'API 키가 누락되었습니다. 설정에서 API 키를 입력해 주세요.',
+    errMicFailed: '마이크 장치를 활성화하거나 오디오 파이프라인을 구동하는 데 실패했습니다.'
+  },
+  en: {
+    statusDemo: 'Demo Mode',
+    statusConnected: 'Connected',
+    statusConnecting: 'Connecting...',
+    statusError: 'Error',
+    statusWaiting: 'Waiting',
+    freeLimit: 'Free limit:',
+    turnsUsed: 'turns',
+    unlockPro: 'Unlock PRO',
+    upgrade: 'Upgrade',
+    simulatorActive: 'Simulator mode is active.',
+    registerApiKey: 'Register API Key',
+    earbudShare: 'Earbud Share',
+    faceToFace: 'Face-to-Face',
+    errMissingKey: 'API key is missing. Please enter the API key in settings.',
+    errMicFailed: 'Failed to activate microphone or run the audio pipeline.'
+  }
+};
 
 interface TranscriptItem {
   text: string;
@@ -42,6 +79,11 @@ const DEMO_SCENARIOS: Record<string, Array<{ speaker: 'A' | 'B'; original: strin
 };
 
 function App() {
+  // UI Language State
+  const [uiLang, setUiLang] = useState<'ko' | 'en'>(() => {
+    return (localStorage.getItem('gemini_live_translate_ui_lang') as 'ko' | 'en') || 'ko';
+  });
+
   // App Modes and Languages
   const [mode, setMode] = useState<'earbud' | 'split'>('earbud');
   const [langA, setLangA] = useState<string>('ko');
@@ -70,6 +112,12 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isPricingOpen, setIsPricingOpen] = useState<boolean>(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
+
+  const handleToggleUiLang = () => {
+    const nextLang = uiLang === 'ko' ? 'en' : 'ko';
+    setUiLang(nextLang);
+    localStorage.setItem('gemini_live_translate_ui_lang', nextLang);
+  };
 
   // Connection & Recording status
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error' | 'demo'>('demo');
@@ -266,7 +314,7 @@ function App() {
   // Run the Live API Connection Logic (WebSockets + Microphones)
   const startLiveApiSession = async (speaker: 'A' | 'B') => {
     if (!apiKey) {
-      setErrorMessage("API 키가 누락되었습니다. 설정에서 API 키를 입력해 주세요.");
+      setErrorMessage(TRANSLATIONS[uiLang].errMissingKey);
       setIsSettingsOpen(true);
       return;
     }
@@ -330,7 +378,7 @@ function App() {
       await recorderRef.current.start();
     } catch (err: any) {
       console.error(err);
-      setErrorMessage("마이크 장치를 활성화하거나 오디오 파이프라인을 구동하는 데 실패했습니다.");
+      setErrorMessage(TRANSLATIONS[uiLang].errMicFailed);
       stopAllStreams();
     }
   };
@@ -376,44 +424,47 @@ function App() {
   };
 
   const getStatusBadge = () => {
+    const t = TRANSLATIONS[uiLang];
     switch (connectionStatus) {
       case 'demo':
         return (
           <div className="connection-status badge-demo">
             <div className="status-dot demo" />
-            <span>데모 모드</span>
+            <span>{t.statusDemo}</span>
           </div>
         );
       case 'connected':
         return (
           <div className="connection-status badge-live">
             <div className="status-dot connected" />
-            <span>연결됨</span>
+            <span>{t.statusConnected}</span>
           </div>
         );
       case 'connecting':
         return (
           <div className="connection-status" style={{ color: 'var(--color-primary)' }}>
             <div className="status-dot connected" style={{ backgroundColor: 'var(--color-primary)' }} />
-            <span>연결 중...</span>
+            <span>{t.statusConnecting}</span>
           </div>
         );
       case 'error':
         return (
           <div className="connection-status" style={{ color: '#ef4444' }}>
             <div className="status-dot" style={{ backgroundColor: '#ef4444' }} />
-            <span>에러</span>
+            <span>{t.statusError}</span>
           </div>
         );
       default:
         return (
           <div className="connection-status" style={{ color: 'var(--color-text-muted)' }}>
             <div className="status-dot disconnected" />
-            <span>대기 중</span>
+            <span>{t.statusWaiting}</span>
           </div>
         );
     }
   };
+
+  const t = TRANSLATIONS[uiLang];
 
   return (
     <div className="app-container">
@@ -445,6 +496,15 @@ function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {getStatusBadge()}
           <button 
+            className="icon-button lang-toggle" 
+            onClick={handleToggleUiLang}
+            title={uiLang === 'ko' ? 'Switch to English' : '한국어로 변경'}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '5px 8px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', cursor: 'pointer', color: 'var(--color-text-main)' }}
+          >
+            <Globe size={13} style={{ opacity: 0.8 }} />
+            <span>{uiLang === 'ko' ? 'EN' : 'KO'}</span>
+          </button>
+          <button 
             className="icon-button" 
             onClick={() => setIsSettingsOpen(true)}
             aria-label="Settings"
@@ -459,15 +519,15 @@ function App() {
         <div className="simulation-banner" style={{ background: 'rgba(129, 140, 248, 0.05)', border: '1px solid rgba(129, 140, 248, 0.1)', color: 'var(--color-text-muted)', margin: '0 20px 16px' }}>
           <CreditCard size={14} style={{ color: 'var(--color-primary)' }} />
           <span style={{ fontSize: '12px' }}>
-            무료 사용량 한도: <strong>{sessionTurns} / 3 턴</strong> 사용됨
+            {t.freeLimit} <strong>{sessionTurns} / 3 {t.turnsUsed}</strong> {uiLang === 'ko' ? '사용됨' : 'used'}
           </span>
           {sessionTurns >= 3 ? (
             <button onClick={() => setIsPricingOpen(true)} style={{ background: 'var(--gradient-glow)', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, marginLeft: 'auto', cursor: 'pointer' }}>
-              PRO로 해제
+              {uiLang === 'ko' ? 'PRO로 해제' : 'Unlock PRO'}
             </button>
           ) : (
             <button onClick={() => setIsPricingOpen(true)} style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--color-text-main)', border: '1px solid var(--border-color)', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, marginLeft: 'auto', cursor: 'pointer' }}>
-              업그레이드
+              {t.upgrade}
             </button>
           )}
         </div>
@@ -477,9 +537,9 @@ function App() {
       {isDemoMode && (
         <div className="simulation-banner">
           <HelpCircle size={16} />
-          <span>시뮬레이터 모드가 활성화되어 있습니다.</span>
+          <span>{t.simulatorActive}</span>
           <button onClick={() => setIsSettingsOpen(true)}>
-            API 키 등록
+            {t.registerApiKey}
           </button>
         </div>
       )}
@@ -499,14 +559,14 @@ function App() {
           onClick={() => { stopAllStreams(); setMode('earbud'); }}
         >
           <Headphones size={16} />
-          이어폰 공유
+          {t.earbudShare}
         </button>
         <button
           className={`mode-tab ${mode === 'split' ? 'active' : ''}`}
           onClick={() => { stopAllStreams(); setMode('split'); }}
         >
           <Users size={16} />
-          대면 대화
+          {t.faceToFace}
         </button>
       </div>
 
@@ -525,6 +585,7 @@ function App() {
           transcriptsB={transcriptsB}
           onStartSpeaking={handleStartSpeaking}
           onStopSpeaking={handleStopSpeaking}
+          uiLang={uiLang}
         />
       </main>
 
@@ -536,6 +597,7 @@ function App() {
         initialApiKey={apiKey}
         initialEchoTarget={echoTargetLanguage}
         initialIsDemoMode={isDemoMode}
+        uiLang={uiLang}
       />
 
       {/* Pricing / Plan upgrade Modal */}
@@ -547,6 +609,7 @@ function App() {
           setIsCheckoutOpen(true);
         }}
         currentTier={subscriptionTier}
+        uiLang={uiLang}
       />
 
       {/* Credit Card Mock Payment Modal */}
@@ -557,6 +620,7 @@ function App() {
           setSubscriptionTier('pro');
           localStorage.setItem('gemini_live_translate_sub_tier', 'pro');
         }}
+        uiLang={uiLang}
       />
     </div>
   );

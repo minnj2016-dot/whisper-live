@@ -5,12 +5,73 @@ interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onPaymentSuccess: () => void;
+  uiLang?: 'ko' | 'en';
 }
+
+const TRANSLATIONS = {
+  ko: {
+    title: '신용카드 결제',
+    productLabel: '구매 상품',
+    priceLabel: '결제 금액',
+    productName: 'WhisperLive Pro (월정액)',
+    priceVal: '19,000 원',
+    cardSelectLabel: '카드사 선택',
+    cardNumberLabel: '카드 번호',
+    expiryLabel: '유효 기간',
+    cvcLabel: 'CVC (뒷면 3자리)',
+    passwordLabel: '비밀번호 앞 2자리',
+    securityBanner: '보안 결제 표준(SSL) 암호화 연결 적용 중',
+    payBtn: '19,000원 결제 승인 요청',
+    processingTitle: '결제 승인 진행 중',
+    processingDesc: '가상 카드사의 결제 모듈 승인을 기다리고 있습니다...',
+    successTitle: '결제 승인 완료!',
+    successDesc: '정상적으로 Pro 정구독이 체결되었습니다.',
+    successGlow: '이제 실시간 Live 통역을 무제한으로 사용하세요!',
+    finishBtn: '무제한 통역 시작하기',
+    cards: {
+      samsung: '삼성카드',
+      hyundai: '현대카드',
+      shinhan: '신한카드',
+      kookmin: 'KB국민카드',
+      lotte: '롯데카드',
+      bc: 'BC카드'
+    }
+  },
+  en: {
+    title: 'Credit Card Payment',
+    productLabel: 'Product',
+    priceLabel: 'Total Price',
+    productName: 'WhisperLive Pro (Monthly)',
+    priceVal: '19,000 KRW',
+    cardSelectLabel: 'Select Card Issuer',
+    cardNumberLabel: 'Card Number',
+    expiryLabel: 'Expiry Date',
+    cvcLabel: 'CVC (3 digits on back)',
+    passwordLabel: 'First 2 Digits of Password',
+    securityBanner: 'SSL secured encrypted connection active',
+    payBtn: 'Pay 19,000 KRW',
+    processingTitle: 'Processing Payment',
+    processingDesc: 'Waiting for card issuer module approval...',
+    successTitle: 'Payment Approved!',
+    successDesc: 'Your Pro monthly subscription has been set up successfully.',
+    successGlow: 'Now enjoy unlimited real-time Live translation!',
+    finishBtn: 'Start Unlimited Translation',
+    cards: {
+      samsung: 'Samsung Card',
+      hyundai: 'Hyundai Card',
+      shinhan: 'Shinhan Card',
+      kookmin: 'KB Kookmin Card',
+      lotte: 'Lotte Card',
+      bc: 'BC Card'
+    }
+  }
+};
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isOpen,
   onClose,
   onPaymentSuccess,
+  uiLang = 'ko',
 }) => {
   const [cardCompany, setCardCompany] = useState('samsung');
   const [cardNumber, setCardNumber] = useState('');
@@ -85,6 +146,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     onClose();
   };
 
+  const t = TRANSLATIONS[uiLang];
+
   return (
     <div className="modal-overlay" onClick={onClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div 
@@ -102,7 +165,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div className="modal-header" style={{ marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <CreditCard size={18} style={{ color: 'var(--color-primary)' }} />
-              <h2 className="modal-title" style={{ fontSize: '18px' }}>신용카드 결제</h2>
+              <h2 className="modal-title" style={{ fontSize: '18px' }}>{t.title}</h2>
             </div>
             <button className="icon-button" onClick={onClose} aria-label="Close">
               <X size={18} />
@@ -116,18 +179,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             {/* Purchase Item Info Banner */}
             <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                <span>구매 상품</span>
-                <span>결제 금액</span>
+                <span>{t.productLabel}</span>
+                <span>{t.priceLabel}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '14px', marginTop: '4px' }}>
-                <span>WhisperLive Pro (월정액)</span>
-                <span className="color-primary" style={{ color: '#818cf8' }}>19,000 원</span>
+                <span>{t.productName}</span>
+                <span className="color-primary" style={{ color: '#818cf8' }}>{t.priceVal}</span>
               </div>
             </div>
 
             {/* Card Issuer Dropdown */}
             <div className="form-group">
-              <label className="form-label" htmlFor="card-issuer-select">카드사 선택</label>
+              <label className="form-label" htmlFor="card-issuer-select">{t.cardSelectLabel}</label>
               <select
                 id="card-issuer-select"
                 className="lang-selector"
@@ -135,18 +198,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 onChange={(e) => setCardCompany(e.target.value)}
                 style={{ width: '100%', paddingRight: '40px' }}
               >
-                <option value="samsung">삼성카드</option>
-                <option value="hyundai">현대카드</option>
-                <option value="shinhan">신한카드</option>
-                <option value="kookmin">KB국민카드</option>
-                <option value="lotte">롯데카드</option>
-                <option value="bc">BC카드</option>
+                <option value="samsung">{t.cards.samsung}</option>
+                <option value="hyundai">{t.cards.hyundai}</option>
+                <option value="shinhan">{t.cards.shinhan}</option>
+                <option value="kookmin">{t.cards.kookmin}</option>
+                <option value="lotte">{t.cards.lotte}</option>
+                <option value="bc">{t.cards.bc}</option>
               </select>
             </div>
 
             {/* Card Number Input */}
             <div className="form-group">
-              <label className="form-label" htmlFor="card-number-input">카드 번호</label>
+              <label className="form-label" htmlFor="card-number-input">{t.cardNumberLabel}</label>
               <input
                 id="card-number-input"
                 type="text"
@@ -161,7 +224,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             {/* Expiry / CVC Row */}
             <div style={{ display: 'flex', gap: '12px' }}>
               <div className="form-group" style={{ flex: 1 }}>
-                <label className="form-label" htmlFor="expiry-input">유효 기간</label>
+                <label className="form-label" htmlFor="expiry-input">{t.expiryLabel}</label>
                 <input
                   id="expiry-input"
                   type="text"
@@ -174,7 +237,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
 
               <div className="form-group" style={{ flex: 1 }}>
-                <label className="form-label" htmlFor="cvc-input">CVC (뒷면 3자리)</label>
+                <label className="form-label" htmlFor="cvc-input">{t.cvcLabel}</label>
                 <input
                   id="cvc-input"
                   type="password"
@@ -190,7 +253,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
             {/* Password Row */}
             <div className="form-group">
-              <label className="form-label" htmlFor="password-input">비밀번호 앞 2자리</label>
+              <label className="form-label" htmlFor="password-input">{t.passwordLabel}</label>
               <input
                 id="password-input"
                 type="password"
@@ -206,12 +269,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--color-text-muted)', justifyContent: 'center' }}>
               <Lock size={12} />
-              <span>보안 결제 표준(SSL) 암호화 연결 적용 중</span>
+              <span>{t.securityBanner}</span>
             </div>
 
             {/* Pay Button */}
             <button type="submit" className="save-button" style={{ background: 'var(--gradient-glow)', border: 'none', fontWeight: 800 }}>
-              19,000원 결제 승인 요청
+              {t.payBtn}
             </button>
           </form>
         )}
@@ -220,8 +283,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 0', gap: '20px' }}>
             <Loader2 size={48} className="animate-spin" style={{ color: '#818cf8', animation: 'spin 1.5s linear infinite' }} />
             <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0 0 6px', fontSize: '16px', fontWeight: 700 }}>결제 승인 진행 중</h3>
-              <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-text-muted)' }}>가상 카드사의 결제 모듈 승인을 기다리고 있습니다...</p>
+              <h3 style={{ margin: '0 0 6px', fontSize: '16px', fontWeight: 700 }}>{t.processingTitle}</h3>
+              <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-text-muted)' }}>{t.processingDesc}</p>
             </div>
           </div>
         )}
@@ -230,9 +293,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 0 10px', gap: '24px', textAlign: 'center' }}>
             <CheckCircle2 size={64} style={{ color: 'var(--color-success)', filter: 'drop-shadow(0 0 10px rgba(52, 211, 153, 0.4))' }} />
             <div>
-              <h3 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: 800, color: 'white' }}>결제 승인 완료!</h3>
-              <p style={{ margin: '0 0 4px', fontSize: '13px', color: 'var(--color-text-muted)' }}>정상적으로 Pro 정구독이 체결되었습니다.</p>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-success)', fontWeight: 600 }}>이제 실시간 Live 통역을 무제한으로 사용하세요!</p>
+              <h3 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: 800, color: 'white' }}>{t.successTitle}</h3>
+              <p style={{ margin: '0 0 4px', fontSize: '13px', color: 'var(--color-text-muted)' }}>{t.successDesc}</p>
+              <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-success)', fontWeight: 600 }}>{t.successGlow}</p>
             </div>
             
             <button 
@@ -240,7 +303,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               className="save-button" 
               style={{ background: 'var(--gradient-glow)', border: 'none', width: '100%', marginTop: '10px' }}
             >
-              무제한 통역 시작하기
+              {t.finishBtn}
             </button>
           </div>
         )}
