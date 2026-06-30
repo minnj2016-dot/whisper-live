@@ -45,6 +45,25 @@ const TRANSLATIONS = {
   }
 };
 
+const safeStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.warn('localStorage is not available:', e);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn('localStorage is not available:', e);
+    }
+  }
+};
+
+
 interface TranscriptItem {
   text: string;
   originalText?: string;
@@ -81,7 +100,7 @@ const DEMO_SCENARIOS: Record<string, Array<{ speaker: 'A' | 'B'; original: strin
 function App() {
   // UI Language State
   const [uiLang, setUiLang] = useState<'ko' | 'en'>(() => {
-    const saved = localStorage.getItem('gemini_live_translate_ui_lang');
+    const saved = safeStorage.getItem('gemini_live_translate_ui_lang');
     return (saved === 'ko' || saved === 'en') ? saved : 'ko';
   });
 
@@ -92,20 +111,20 @@ function App() {
 
   // Configuration state
   const [apiKey, setApiKey] = useState<string>(() => {
-    return localStorage.getItem('gemini_live_translate_api_key') || '';
+    return safeStorage.getItem('gemini_live_translate_api_key') || '';
   });
   const [echoTargetLanguage, setEchoTargetLanguage] = useState<boolean>(() => {
-    const saved = localStorage.getItem('gemini_live_translate_echo_target');
+    const saved = safeStorage.getItem('gemini_live_translate_echo_target');
     return saved ? saved === 'true' : true;
   });
   const [isDemoMode, setIsDemoMode] = useState<boolean>(() => {
-    const saved = localStorage.getItem('gemini_live_translate_demo_mode');
+    const saved = safeStorage.getItem('gemini_live_translate_demo_mode');
     return saved ? saved === 'true' : true;
   });
 
   // Subscription state
   const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro'>(() => {
-    return (localStorage.getItem('gemini_live_translate_sub_tier') as 'free' | 'pro') || 'free';
+    return (safeStorage.getItem('gemini_live_translate_sub_tier') as 'free' | 'pro') || 'free';
   });
   const [sessionTurns, setSessionTurns] = useState<number>(0);
 
@@ -117,7 +136,7 @@ function App() {
   const handleToggleUiLang = () => {
     const nextLang = uiLang === 'ko' ? 'en' : 'ko';
     setUiLang(nextLang);
-    localStorage.setItem('gemini_live_translate_ui_lang', nextLang);
+    safeStorage.setItem('gemini_live_translate_ui_lang', nextLang);
   };
 
   // Connection & Recording status
@@ -174,9 +193,9 @@ function App() {
     setEchoTargetLanguage(newSettings.echoTargetLanguage);
     setIsDemoMode(newSettings.isDemoMode);
 
-    localStorage.setItem('gemini_live_translate_api_key', newSettings.apiKey);
-    localStorage.setItem('gemini_live_translate_echo_target', String(newSettings.echoTargetLanguage));
-    localStorage.setItem('gemini_live_translate_demo_mode', String(newSettings.isDemoMode));
+    safeStorage.setItem('gemini_live_translate_api_key', newSettings.apiKey);
+    safeStorage.setItem('gemini_live_translate_echo_target', String(newSettings.echoTargetLanguage));
+    safeStorage.setItem('gemini_live_translate_demo_mode', String(newSettings.isDemoMode));
 
     setConnectionStatus(newSettings.isDemoMode ? 'demo' : 'disconnected');
     setErrorMessage(null);
@@ -619,7 +638,7 @@ function App() {
         onClose={() => setIsCheckoutOpen(false)}
         onPaymentSuccess={() => {
           setSubscriptionTier('pro');
-          localStorage.setItem('gemini_live_translate_sub_tier', 'pro');
+          safeStorage.setItem('gemini_live_translate_sub_tier', 'pro');
         }}
         uiLang={uiLang}
       />
